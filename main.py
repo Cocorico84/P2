@@ -22,9 +22,11 @@ def get_all_links_by_category(soup):
 
 def get_all_books_from_category(category_url):
     links = []
-    page = 1
-    url = "http://books.toscrape.com/" + category_url.replace('/index.html', f'/page-{page}.html')
+    for i in get_soup("http://books.toscrape.com/" + category_url).findAll('h3'):
+        links.append("http://books.toscrape.com/catalogue/" + i.contents[0]['href'][9:])
+    page = 2
     while True:
+        url = "http://books.toscrape.com/" + category_url.replace('/index.html', f'/page-{page}.html')
         if requests.get(url).status_code == 200:
             book_links = get_soup(url).findAll('h3')
             for i in book_links:
@@ -33,7 +35,6 @@ def get_all_books_from_category(category_url):
             page += 1
         else:
             break
-        url = "http://books.toscrape.com/" + category_url.replace('/index.html', f'/page-{page}.html')
     return links
 
 
@@ -59,5 +60,11 @@ def create_csv(csv_name, book_urls):
 if __name__ == '__main__':
     url = "http://books.toscrape.com/"
     categories = get_all_links_by_category(get_soup(url))[1:]
-    category_book_links = get_all_books_from_category(categories[1])
-    create_csv('my_csv', category_book_links)
+    cat = [re.findall(r"books/(?P<cat>.*)_\d+/", i)[0] for i in categories]
+    categories_dict = {}
+    for i,j in enumerate(cat):
+        categories_dict[i] = j
+        print(i,j)
+    choice = int(input("What category do you want ? : "))
+    category_book_links = get_all_books_from_category(categories[choice])
+    create_csv(f'{categories_dict[choice]}_csv', category_book_links)
