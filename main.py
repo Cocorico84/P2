@@ -2,6 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 import pandas as pd
 import re
+import os
 
 
 def get_soup(url):
@@ -44,9 +45,18 @@ def get_data_from_book(book_urls):
         keys = [i.contents[0] for i in get_soup(url).findAll('th')]
         values = [i.contents[0] for i in get_soup(url).findAll('td')]
         data = dict(zip(keys, values))
-        data['Title'] = get_soup(url).find('h1').contents[0]
-        data['Category'] = get_soup(url).find_all(href=re.compile("category"))[1].contents[0]
-        data['Image src'] = "http://books.toscrape.com/" + get_soup(url).find('img')['src'][6:]
+        title = get_soup(url).find('h1').contents[0]
+        data['Title'] = title
+        category = get_soup(url).find_all(href=re.compile("category"))[1].contents[0]
+        data['Category'] = category
+        image_link = "http://books.toscrape.com/" + get_soup(url).find('img')['src'][6:]
+        data['Image src'] = image_link
+        response = requests.get(image_link)
+        if not os.path.exists(f"{category}"):
+            os.makedirs(f"{category}")
+        file = open(f"{category}/{title}.jpg", "wb")
+        file.write(response.content)
+        file.close()
         data['Description'] = get_soup(url).select('article > p')[0].contents[0]
         data['Product page url'] = url
         all_data_from_from_from_category.append(data)
@@ -62,9 +72,9 @@ if __name__ == '__main__':
     categories = get_all_links_by_category(get_soup(url))[1:]
     cat = [re.findall(r"books/(?P<cat>.*)_\d+/", i)[0] for i in categories]
     categories_dict = {}
-    for i,j in enumerate(cat):
+    for i, j in enumerate(cat):
         categories_dict[i] = j
-        print(i,j)
+        print(i, j)
     choice = int(input("What category do you want ? : "))
     category_book_links = get_all_books_from_category(categories[choice])
     create_csv(f'{categories_dict[choice]}_csv', category_book_links)
