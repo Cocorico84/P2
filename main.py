@@ -8,7 +8,7 @@ from bs4 import BeautifulSoup
 URL = "http://books.toscrape.com/"
 
 
-def get_soup(url: str):
+def get_soup(url: str) -> BeautifulSoup:
     """
     A general function to get a HTML document with data you want to parse
 
@@ -20,7 +20,7 @@ def get_soup(url: str):
     return soup
 
 
-def get_all_links_by_category(soup):
+def get_all_links_by_category(soup: BeautifulSoup) -> list:
     """
     Give the soup containing all category links
 
@@ -37,7 +37,7 @@ def get_all_links_by_category(soup):
     return category_links
 
 
-def get_all_books_from_category(category_url: str):
+def get_all_books_from_category(category_url: str) -> list:
     """
     Give all urls of books from a category
 
@@ -61,7 +61,7 @@ def get_all_books_from_category(category_url: str):
     return links
 
 
-def get_data_from_book(book_urls: list):
+def get_data_from_book(book_urls: list) -> pd.DataFrame:
     """
     Parse each url book to get data and put it into a dictionary then into a dataframe
 
@@ -91,7 +91,7 @@ def get_data_from_book(book_urls: list):
     return pd.DataFrame(all_data_from_from_from_category)
 
 
-def create_csv(csv_name: str, book_urls: list):
+def create_csv(csv_name: str, book_urls: list) -> None:
     """
     Transform yor dataframe into a csv
 
