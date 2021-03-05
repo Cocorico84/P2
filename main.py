@@ -4,6 +4,7 @@ import re
 import pandas as pd
 import requests
 from bs4 import BeautifulSoup
+from tqdm import tqdm
 
 URL = "http://books.toscrape.com/"
 
@@ -16,7 +17,7 @@ def get_soup(url: str) -> BeautifulSoup:
     :return: a HTML document that you can find elements by tags
     """
     response = requests.get(url)
-    soup = BeautifulSoup(response.text, 'html.parser')
+    soup = BeautifulSoup(response.content, 'html.parser')
     return soup
 
 
@@ -115,8 +116,8 @@ if __name__ == '__main__':
         category_book_links = get_all_books_from_category(categories[choice])
         create_csv(f'{categories_dict[choice]}_csv', category_book_links)
     elif choice == 50:
-        for i in range(max(categories_dict, key=categories_dict.get)):
-            category_book_links = get_all_books_from_category(categories[i])
-            create_csv(f'{i}_{categories_dict[i]}_csv', category_book_links)
+        for k, v in tqdm(categories_dict.items()):
+            category_book_links = get_all_books_from_category(categories[k])
+            create_csv(f'{k}_{v}_csv', category_book_links)
     else:
         print("Wrong number")
