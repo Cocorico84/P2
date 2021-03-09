@@ -111,7 +111,7 @@ if __name__ == '__main__':
         categories_dict[i] = j
         print(i, j)
     print(50, "all", sep=" ")
-    choice = int(input("What category do you want ? : "))
+    choice = int(input("What category do you want ? (choose a number) : "))
     if 0 <= choice <= 49:
         category_book_links = get_all_books_from_category(categories[choice])
         create_csv(f'{categories_dict[choice]}_csv', category_book_links)
