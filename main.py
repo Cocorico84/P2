@@ -83,8 +83,8 @@ def get_data_from_book(book_urls: list) -> pd.DataFrame:
         image_link = "http://books.toscrape.com/" + soup.find('img')['src'][6:]
         data['Image src'] = image_link
         response = requests.get(image_link)
-        os.makedirs(f"{category}_images", exist_ok=True)
-        with open(f"{category}_images/{title}.jpg", "wb") as file:
+        os.makedirs(f"data/{category}/{category}_images", exist_ok=True)
+        with open(f"data/{category}/{category}_images/{title}.jpg", "wb") as file:
             file.write(response.content)
         data['Description'] = soup.select('article > p')[0].contents[0]
         data['Product page url'] = url
@@ -114,10 +114,10 @@ if __name__ == '__main__':
     choice = int(input("What category do you want ? (choose a number) : "))
     if 0 <= choice <= 49:
         category_book_links = get_all_books_from_category(categories[choice])
-        create_csv(f'{categories_dict[choice]}_csv', category_book_links)
+        create_csv(f'data/{categories_dict[choice].capitalize()}/{categories_dict[choice]}_csv', category_book_links)
     elif choice == 50:
         for k, v in tqdm(categories_dict.items()):
             category_book_links = get_all_books_from_category(categories[k])
-            create_csv(f'{k}_{v}_csv', category_book_links)
+            create_csv(f'data/{v.capitalize()}/{v}_csv', category_book_links)
     else:
         print("Wrong number")
